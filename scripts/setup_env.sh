@@ -35,7 +35,7 @@ if command -v uv &>/dev/null; then
     echo "uv is already installed: $(uv --version)"
 else
     echo "Installing uv..."
-    curl -LsSf https://astral.sh/uv/install.sh | sh
+    curl -LsSf https://astral.sh/uv/install.sh | sh -s -- --no-modify-path
 
     if [ -f "$UV_ENV_FILE" ]; then
         # shellcheck disable=SC1090
