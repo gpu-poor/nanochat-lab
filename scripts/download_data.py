@@ -18,7 +18,17 @@ MINIMAL_DIRS = ["tokenizer/", "eval_bundle/"]
 def run_s3cmd(args: list[str], capture=False) -> subprocess.CompletedProcess:
     cmd = ["s3cmd"] + args
     print(f"  -> {' '.join(cmd)}")
-    return subprocess.run(cmd, check=True, capture_output=capture, text=capture)
+    result = subprocess.run(
+        cmd, check=False,
+        capture_output=capture, text=capture,
+    )
+    if result.returncode != 0:
+        msg = f"s3cmd failed (exit code {result.returncode}): {' '.join(cmd)}"
+        if capture and result.stderr:
+            msg += f"\n  stderr: {result.stderr.strip()}"
+        msg += "\n  Hint: verify s3cmd works with: s3cmd ls s3://aneekb/nanochat_run_artifacts/nanochat/"
+        sys.exit(msg)
+    return result
 
 
 def check_prerequisites():
@@ -47,12 +57,12 @@ def find_latest_step() -> str:
 
 def sync_dir(s3_path: str, local_path: str):
     os.makedirs(local_path, exist_ok=True)
-    run_s3cmd(["sync", s3_path, local_path + "/"])
+    run_s3cmd(["sync", "--no-preserve", s3_path, local_path + "/"])
 
 
 def get_file(s3_path: str, local_path: str):
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
-    run_s3cmd(["get", "--skip-existing", s3_path, local_path])
+    run_s3cmd(["get", "--no-preserve", "--skip-existing", s3_path, local_path])
 
 
 def download_minimal(download_dir: str, dry_run: bool):
