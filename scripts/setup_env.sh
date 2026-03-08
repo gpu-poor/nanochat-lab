@@ -27,8 +27,8 @@ fi
 
 # --- Install system packages ---
 echo "Installing system packages..."
-apt update -qq
-apt install -y -qq s3cmd
+sudo apt update -qq
+sudo apt install -y -qq s3cmd
 
 # --- Install uv if not already present ---
 if command -v uv &>/dev/null; then
@@ -82,3 +82,10 @@ source "$VENV_ACTIVATE"
 echo ""
 echo "Setup complete. Python: $(which python) ($(python --version))"
 echo "Venv will auto-activate on future logins."
+
+
+#!/bin/bash
+# apt update && apt install -y git
+# git clone https://github.com/<org>/nanochat-lab.git "$HOME/nanochat-lab"
+# cd "$HOME/nanochat-lab"
+# source scripts/setup_env.sh
